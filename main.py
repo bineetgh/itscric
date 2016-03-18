@@ -246,45 +246,11 @@ def start():
 		
 	bowler_bowling = bowlers["1"]
 	bowler_bowling_id = bowler_bowling.id
-	
-
-	#bat_score = batter_on_strike.next()
-	#bowl_score = bowler_bowling.next()
-	#match_score = match.next()
-	
-	#score = random.choice([bat_score, bowl_score, match_score])
-	
-	#match.score.add(score);
-	
-	#batter_on_strike = batter_on_strike.addScore(score)
-	#bowler_bowling.addScore(score)
-	
-	#batters[batter_on_strike_id] = batter_on_strike
-	#bowlers[bowler_bowling_id] = bowler_bowling
-	
-	#print(batter_on_strike.id)
-	#print(bowler_bowling.id)
-							
-	#session['batters'] = batters
-	#session['bowlers'] = bowlers
-	#session['match'] = match
-	#session['batter_on_strike'] = batter_on_strike
-	#session['bowler_bowling'] = bowler_bowling
-	#session['bowler_bowling_id'] = bowler_bowling_id
-	#session['batter_on_strike_id'] = batter_on_strike_id
 
 	return jsonify(runs=match.score.runs, wickets=match.score.wickets, overs=str(int(match.score.balls/6)) +"."+ str(match.score.balls%6), batters=batters, bowlers=bowlers)	
 	
 @app.route('/next', methods = ['GET','POST'])
 def next():
-	
-	#batters = session['batters']
-	#bowlers = session['bowlers']
-	#match = session['match']
-	#batter_on_strike = session['batter_on_strike']
-	#bowler_bowling = session['bowler_bowling']
-	#bowler_bowling_id = session['bowler_bowling_id']
-	#batter_on_strike_id = session['batter_on_strike_id']
 
 	global batters
 	global bowlers
@@ -296,9 +262,6 @@ def next():
 	global batter_on_non_strike_id
 	global bowler_bowling_id
 
-	#print(batter_on_strike)
-	#print(bowler_bowling)
-	#print(batters)
 
 	bat_score = batter_on_strike.next()
 	bowl_score = bowler_bowling.next()
@@ -320,23 +283,9 @@ def next():
 
 
 	bowler_bowling.addScore(score)
-	
-	#batters[bowler_bowling_id] = batter_on_strike
-	#bowlers[bowler_bowling_id] = bowler_bowling
-	
+		
 	print(batter_on_strike.id)
 	print(bowler_bowling.id)
-
-	#print(session['batters'])
-	#print(session['bowlers'])
-		
-	#session['batters'] = batters
-	#session['bowlers'] = bowlers
-	#session['match'] = match
-	#session['batter_on_strike'] = batter_on_strike
-	#session['bowler_bowling'] = bowler_bowling
-	#session['bowler_bowling_id'] = bowler_bowling_id
-	#session['batter_on_strike_id'] = batter_on_strike_id
 	
 	return jsonify(runs=match.score.runs, wickets=match.score.wickets, overs=str(int(match.score.balls/6)) +"."+ str(match.score.balls%6), batters=batters, bowlers=bowlers)	
 	
