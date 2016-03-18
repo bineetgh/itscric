@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Cats Everywhere!</title>	
+
+	<link href='http://fonts.googleapis.com/css?family=Sintony:400,700' rel='stylesheet' type='text/css'>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+	
+	<!-- Latest compiled and minified CSS -->
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
+
+	<!-- Optional theme -->
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">-->
+
+	<!-- Latest compiled and minified JavaScript -->
+	<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>-->
+
+	<!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+	
+	 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<style type="text/css">    
+
+	</style>
+	
+	<script type="text/javascript">
+	  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+	</script>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+		
+			var refreshScore = function(data){
+				$("#runs").html('IND <span class="label label-default" id="runs">'+ data.runs+ '/' + data.wickets + '</span><br /><br />');
+				$("#overs").html('OVERS <span class="label label-default" id="overs">' + data.overs + '</span>');
+				var batting = '<thead><tr><th data-field="name">Name</th><th data-field="score">Score</th></tr></thead><tbody>';
+				for(var key in data.batters){
+					batting += '<tr><td><p><input name="bowler'+key+'" type="radio" id="batter'+key+'" selected="' + (data.batters[key].is_batting!=0) + '" /><label for="batter'+key+'">'+ data.batters[key].name + '</label></p></td><td>' + data.batters[key].runs + '(' + data.batters[key].balls + ')</td></tr>';
+				}
+				batting += '</tbody></table>';
+				$("#batting_card").html(batting);
+
+				var bowling = '<thead><tr><th data-field="name">Name</th><th data-field="score">Figure</th></tr></thead><tbody>';
+				for(var key in data.bowlers){
+					bowling += '<tr><td><p><input name="bowler'+key+'" type="radio" id="bowler'+key+'" selected="' + (data.bowlers[key].is_bowling!=0) + '" /><label for="bowler'+key+'">'+ data.bowlers[key].name + '</label></p></td><td>' + data.bowlers[key].balls + '-' + data.bowlers[key].runs + '-' + data.bowlers[key].wickets + '</td></tr>';
+				}
+				bowling += '</tbody></table>';
+				$("#bowling_card").html(bowling);
+			}
+			
+			$("a#start").bind("click", function(){
+				$(this).hide();
+				$("#next").show();
+				$.getJSON($SCRIPT_ROOT + '/start', {}, function(data) {
+					refreshScore(data);
+				  });
+				  return false;
+			});
+			
+			$("a#next").bind("click", function(){
+				$.getJSON($SCRIPT_ROOT + '/next', {}, function(data) {
+					refreshScore(data);
+				  });
+				  return false;
+			});
+		});
+		
+	</script>
+
+</head>  
+  
+<body>
+<!--
+	<div id="banner">
+		<div id="scoreboard">			
+		</div>
+		<div class="lead">
+		{% if score != None %}
+			IND <span id="runs">{{score.runs}}/{{score.wickets}}</span><br />
+			OVERS <span id="overs">{{score.overs}}</span>
+		{% endif %}
+		</div>
+		<div id="emailform">
+			<button id="start" name="start">Play</button>
+			<button id="next" name="next">Next Ball</button>
+		</div>
+	</div>
+	-->
+	<!--
+	<h2>WORLD T20 LEAGUE</h2>
+	   <p>
+		<a id="start" name="start" class="btn btn-primary btn-lg" href="#" role="button">Play</a>
+		<a id="next" name="next" class="btn btn-primary btn-lg" href="#" role="button">Next Ball</a>
+	</p>
+	<div>
+	{% if score != None %}
+			<div>
+				IND <span class="label label-default" id="runs">{{score.runs}}/{{score.wickets}}</span><br /><br />
+				OVERS <span class="label label-default" id="overs">{{score.overs}}</span>
+			</div>
+			<div id="batting" class="pull-left">
+			{% for batter in batters %}
+				<span class="label label-info">{{batter.name}}</span>
+			{% endfor %}
+			</div>
+			<div id="bowling" class="pull-left">
+			{% for bowler in bowlers %}
+				<span class="label label-info">{{bowler.name}}</span>
+			{% endfor %}
+			</div>
+	{% endif %}
+	</div>	
+	-->
+	 <div class="row">
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">IND VS AUS</span>
+              <div id="runs">
+			  </div>
+			  <div id="overs">
+			  </div>
+            </div>
+            <div class="card-action">
+              <a id="start" name="start" class="btn btn-primary btn-lg" href="#" role="button">Play</a>
+			  <a id="next" name="next" class="btn btn-primary btn-lg" href="#" role="button">Next Ball</a>
+            </div>
+          </div>
+        </div>
+		<div class="col s12 m6">
+			<ul class="collection">
+				<li class="collection-item avatar">
+				  <img src="http://lorempixel.com/400/200/" alt="" class="circle">
+				  <span class="title">User Name</span>
+				  <p>Rank : 123<br>
+					 Stats
+				  </p>
+				  <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+				</li>
+			  </ul>
+        </div>
+      </div>
+	  <div class="row">
+		<div class="col s8 m4">
+			<table id="batting_card">			
+			</table>
+		</div>
+		<div class="col s8 m4">
+			<table id="bowling_card">
+			</table>
+		</div>
+	  </div>
+</body>
+</html>
