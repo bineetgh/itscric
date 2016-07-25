@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, session, get_template_attribute, jsonify
 from flask.json import JSONEncoder
 
+import sys
+import json
+
 import random
 app = Flask(__name__)
 
@@ -44,10 +47,16 @@ class Batter(object):
 		self.runs = 0
 		self.balls = 0
 		self.is_batting = 1
+		self.is_out = 0
 		self.on_strike = onstrike
 		self.pool = pool
 		self.partner = None
-				
+		self.image = 'http://lorempixel.com/200/200/'
+		self.order = None
+
+	def setOrder(self, order):
+		self.order = order
+		
 	def next(self):
 		return self.pool.next()
 		
@@ -89,6 +98,7 @@ class Bowler(object):
 		self.wideBalls = 0
 		self.noBalls = 0
 		self.pool = pool
+		self.image = 'http://lorempixel.com/200/200/'
 				
 	def next(self):
 		return self.pool.next()
@@ -173,7 +183,8 @@ class MyJSONEncoder(JSONEncoder):
 				'runs': obj.runs,
 				'balls': obj.balls,
 				'on_strike': obj.on_strike,
-				'is_batting':obj.is_batting
+				'is_batting':obj.is_batting,
+				'image': obj.image
 			}
 		elif isinstance(obj, Bowler):
 			return {
@@ -181,7 +192,8 @@ class MyJSONEncoder(JSONEncoder):
                 'runs': obj.runs,
                 'balls': obj.balls,
 				'wickets': obj.wickets,
-				'is_bowling': obj.is_bowling
+				'is_bowling': obj.is_bowling,
+				'image': obj.image
 			}
 		elif isinstance(obj, Match):
 			return {
@@ -193,7 +205,7 @@ app.json_encoder = MyJSONEncoder
 		
 @app.route('/')
 def hello_world():	
-	return render_template('index.html', score=Score())
+	return render_template('index.html', score=Score(), batters={})
 
 
 @app.route('/start', methods = ['GET','POST'])
@@ -283,22 +295,46 @@ def next():
 
 
 	bowler_bowling.addScore(score)
-		
-	print(batter_on_strike.id)
-	print(bowler_bowling.id)
-	
+			
 	return jsonify(runs=match.score.runs, wickets=match.score.wickets, overs=str(int(match.score.balls/6)) +"."+ str(match.score.balls%6), batters=batters, bowlers=bowlers)	
-	
+
+@app.route('/save', methods = ['GET', 'POST'])
+def save():
+	global batters
+	print (batters)
+
+	try:
+		for i in range(1, 2):
+			print ('sl_batter_'+ str(i) + '')
+			print (request.form['ih_batter_1'])
+			index = request.form['sl_batter_'+ str(i) + '']
+			print('index: '+index)
+			#batters[index].setOrder(str(i))
+			#print('batter order: ' + batters[index].order)
+
+		return json.dumps({'html':'<span>All fields good !!</span>'})
+
+	except:
+		print (sys.exc_info()[0])
+		return json.dumps({'html':'<span>Enter the required fields</span>'})
+
+
 @app.route('/signup', methods = ['POST'])
 def signup():
 	email = request.form['email']
 	email_addresses.append(email)
-	print(email_addresses)
 	return redirect('/')
 	
 @app.route('/emails.html')
 def emails():
 	return render_template('emails.html', email_addresses=email_addresses)
+
+@app.route('/setup', methods = ['GET','POST'])
+def setup():
+	global batters	
+	global bowlers
+
+	return render_template('setup.html', batters=batters, bowlers=bowlers)
 
 if __name__ == "__main__":
 	app.run(debug=True)
